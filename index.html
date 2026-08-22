@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content5="width=device-width, initial-scale=1.0">
+    <title>TrustDossier - Cek Keamanan Akun & Platform Digital</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between font-sans">
+
+    <!-- Header -->
+    <header class="max-w-4xl w-full mx-auto p-6 flex justify-between items-center border-b border-slate-800">
+        <div class="flex items-center space-x-2">
+            <span class="text-2xl">🛡️</span>
+            <span class="font-bold text-lg tracking-wider">ShieldCheck</span>
+        </div>
+        <div class="text-sm text-slate-400 space-x-4">
+            <a href="#" class="hover:text-white">Tentang</a>
+            <a href="#" class="hover:text-white">Laporkan</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-2xl w-full mx-auto px-6 py-16 text-center flex-grow flex flex-col justify-center">
+        <h1 class="text-4xl font-extrabold tracking-tight mb-4">
+            Cek Akun, Toko, atau Influencer Ini Penipu atau Asli?
+        </h1>
+        <p class="text-slate-400 mb-8">
+            Masukkan link profil atau username media sosial untuk mendaparkan laporan audit keamanan instan berbasis AI.
+        </p>
+
+        <!-- Search Box -->
+        <div class="flex flex-col sm:flex-row gap-3 bg-slate-900 p-2 rounded-2xl border border-slate-800 shadow-2xl">
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="Contoh: @sneakers_murah_jkt atau link profil..." 
+                class="flex-grow bg-transparent px-4 py-3 outline-none text-white placeholder-slate-500"
+            >
+            <button 
+                onclick="runAudit()" 
+                class="bg-indigo-600 hover:bg-indigo-500 font-semibold px-6 py-3 rounded-xl transition-all cursor-pointer">
+                Analisis Sekarang
+            </button>
+        </div>
+
+        <!-- Result Area -->
+        <div id="resultBox" class="mt-8 hidden text-left bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+            <h3 class="text-xl font-bold mb-2 text-indigo-400" id="resultTitle">Hasil Audit</h3>
+            <div id="resultContent" class="text-slate-300 space-y-2 text-sm leading-relaxed"></div>
+        </div>
+    </main>
+
+    <!-- AdSense / Footer -->
+    <footer class="max-w-4xl w-full mx-auto p-6 text-center text-xs text-slate-500 border-t border-slate-800">
+        <p>[ SPACE IKLAN / ADSENSE ]</p>
+        <p class="mt-2">&copy; 2026 ShieldCheck. Database Terbuka Investigasi Digital.</p>
+    </footer>
+
+    <script>
+        function runAudit() {
+            const query = document.getElementById('searchInput').value.trim();
+            const resultBox = document.getElementById('resultBox');
+            const resultContent = document.getElementById('resultContent');
+            const resultTitle = document.getElementById('resultTitle');
+
+            if (!query) {
+                alert('Silakan masukkan username atau link terlebih dahulu!');
+                return;
+            }
+
+            resultBox.classList.remove('hidden');
+            resultTitle.innerText = "Menganalisis Target: " + query;
+            resultContent.innerHTML = "<p class='animate-pulse text-indigo-300'>🔍 Menghubungkan ke sistem forensik AI & memindai jejak digital...</p>";
+
+            // Simulasi hasil respons cepat (Nanti kita hubungkan langsung dengan AI & Supabase di tahap berikutnya)
+            setTimeout(() => {
+                resultContent.innerHTML = `
+                    <div class='p-3 bg-red-950/40 border border-red-800/50 rounded-lg mb-3'>
+                        <strong class='text-red-400'>⚠️ SKOR RISIKO: 88% (HIGH RISK - INDIKASI PENIPUAN)</strong>
+                    </div>
+                    <p><strong>Poin Temuan Utama:</strong></p>
+                    <ul class='list-disc list-inside space-y-1 text-slate-300'>
+                        <li>Pola pengikut terdeteksi menggunakan bot pasif dalam jumlah masif.</li>
+                        <li>Umur akun terlalu singkat dengan pergantian nama pengguna berulang.</li>
+                        <li>Tidak ditemukan rekam jejak entitas bisnis resmi yang valid di database publik.</li>
+                    </ul>
+                `;
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
