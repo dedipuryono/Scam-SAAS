@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShieldCheck - Global Digital Investigation & Trust Database</title>
+    <title>ShieldCheck - Global Digital Investigation Database</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between">
@@ -18,19 +18,29 @@
             </div>
             <span class="text-xl font-bold tracking-wide">ShieldCheck</span>
         </div>
-        <div class="space-x-4 text-sm text-slate-400">
-            <a href="#tentang" class="hover:text-white transition">About</a>
-            <a href="#laporkan" class="hover:text-white transition">Report</a>
+
+        <!-- Tombol Pilihan Bahasa & Menu -->
+        <div class="flex items-center space-x-4">
+            <select id="langSelect" class="bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 cursor-pointer">
+                <option value="id">🇮🇩 Bahasa Indonesia</option>
+                <option value="en">🇬🇧 English</option>
+                <option value="es">🇪🇸 Español</option>
+                <option value="zh">🇨🇳 中文</option>
+            </select>
+            <div class="hidden md:flex space-x-4 text-sm text-slate-400">
+                <a href="#tentang" class="hover:text-white transition">About</a>
+                <a href="#laporkan" class="hover:text-white transition">Report</a>
+            </div>
         </div>
     </header>
 
     <!-- Main Content -->
     <main class="flex-grow flex flex-col items-center justify-center px-4 text-center my-12">
-        <h1 class="text-3xl md:text-5xl font-extrabold max-w-3xl leading-tight mb-4">
-            Verify Account, Store, or Influencer: Scam or Genuine?
+        <h1 id="mainTitle" class="text-3xl md:text-5xl font-extrabold max-w-3xl leading-tight mb-4">
+            Cek Akun, Toko, atau Influencer Ini Penipu atau Asli?
         </h1>
-        <p class="text-slate-400 max-w-xl mb-8 text-sm md:text-base">
-            Enter a social media profile link or username to get an instant AI-powered security audit report in your preferred language.
+        <p id="mainDesc" class="text-slate-400 max-w-xl mb-8 text-sm md:text-base">
+            Masukkan link profil atau username media sosial untuk mendapatkan laporan audit keamanan instan berbasis AI.
         </p>
 
         <!-- Form Input -->
@@ -38,7 +48,7 @@
             <input 
                 type="text" 
                 id="targetInput" 
-                placeholder="Example: @username or profile link..." 
+                placeholder="Contoh: @sneakers_murah_jkt atau link profil..." 
                 class="flex-grow bg-transparent px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none text-sm md:text-base"
             >
             <button 
@@ -46,13 +56,13 @@
                 id="submitBtn"
                 class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-6 py-3 rounded-xl transition text-sm md:text-base shadow-lg shadow-indigo-600/30"
             >
-                Analyze Now
+                Analisis Sekarang
             </button>
         </div>
 
         <!-- Hasil Analisis -->
         <div id="resultContainer" class="w-full max-w-2xl mt-8 hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl text-left">
-            <h3 class="text-lg font-bold text-indigo-400 mb-2">Security Audit Result:</h3>
+            <h3 class="text-lg font-bold text-indigo-400 mb-2">Hasil Audit Keamanan:</h3>
             <div id="resultText" class="text-slate-300 text-sm whitespace-pre-line leading-relaxed"></div>
         </div>
     </main>
@@ -63,20 +73,68 @@
         <p>&copy; 2026 ShieldCheck. Global Digital Investigation Database.</p>
     </footer>
 
-    <!-- Script Integrasi AI & Supabase dengan Auto-Language Detection -->
+    <!-- Script Integrasi & Pengubah Bahasa -->
     <script>
+        const translations = {
+            id: {
+                title: "Cek Akun, Toko, atau Influencer Ini Penipu atau Asli?",
+                desc: "Masukkan link profil atau username media sosial untuk mendapatkan laporan audit keamanan instan berbasis AI.",
+                placeholder: "Contoh: @sneakers_murah_jkt atau link profil...",
+                btnText: "Analisis Sekarang",
+                loadingText: "Menganalisis...",
+                resultTitle: "Hasil Audit Keamanan:"
+            },
+            en: {
+                title: "Verify Account, Store, or Influencer: Scam or Genuine?",
+                desc: "Enter a social media profile link or username to get an instant AI-powered security audit report.",
+                placeholder: "Example: @username or profile link...",
+                btnText: "Analyze Now",
+                loadingText: "Analyzing...",
+                resultTitle: "Security Audit Result:"
+            },
+            es: {
+                title: "¿Verificar Cuenta, Tienda o Influencer: Estafa o Real?",
+                desc: "Ingrese un enlace de perfil o nombre de usuario de redes sociales para obtener un informe de auditoría de seguridad instantáneo con IA.",
+                placeholder: "Ejemplo: @usuario o enlace de perfil...",
+                btnText: "Analizar Ahora",
+                loadingText: "Analizando...",
+                resultTitle: "Resultado de Auditoría de Seguridad:"
+            },
+            zh: {
+                title: "核实账号、商店或网红：是骗局还是正品？",
+                desc: "输入社交媒体个人资料链接或用户名，即可获取由人工智能驱动的即时安全审计报告。",
+                placeholder: "例如：@用户名 或主页链接...",
+                btnText: "立即分析",
+                loadingText: "分析中...",
+                resultTitle: "安全审计结果："
+            }
+        };
+
+        document.getElementById('langSelect').addEventListener('change', function() {
+            const lang = this.value;
+            const t = translations[lang];
+            
+            document.getElementById('mainTitle').innerText = t.title;
+            document.getElementById('mainDesc').innerText = t.desc;
+            document.getElementById('targetInput').placeholder = t.placeholder;
+            document.getElementById('submitBtn').innerText = t.btnText;
+            document.querySelector('#resultContainer h3').innerText = t.resultTitle;
+        });
+
         async function handleAnalysis() {
             const targetInput = document.getElementById('targetInput').value.trim();
             const btn = document.getElementById('submitBtn');
             const resultContainer = document.getElementById('resultContainer');
             const resultText = document.getElementById('resultText');
+            const currentLang = document.getElementById('langSelect').value;
+            const t = translations[currentLang];
 
             if (!targetInput) {
-                alert('Please enter a username or link first!');
+                alert(currentLang === 'id' ? 'Silakan masukkan username atau link terlebih dahulu!' : 'Please enter a username or link first!');
                 return;
             }
 
-            btn.innerText = 'Analyzing...';
+            btn.innerText = t.loadingText;
             btn.disabled = true;
             resultContainer.classList.add('hidden');
 
@@ -85,9 +143,7 @@
             const supabaseKey = 'sb_publishable_C14TG-LjEYMnGzUT400FJw_HRswxjh7';
 
             try {
-                // Deteksi bahasa otomatis berdasarkan input atau instruksi global
-                const promptText = `Analyze the following social media account, store, or influencer objectively to check if it has scam indicators or is genuine: "${targetInput}". 
-                IMPORTANT: Detect the language of the target/query or user context, and write the entire response report in that exact same language (e.g., if input is in Indonesian, respond in Indonesian; if in English, respond in English; if in Spanish, respond in Spanish, etc.). Provide a risk score level and a concise summary.`;
+                const promptText = `Analyze the following social media account, store, or influencer objectively to check if it has scam indicators or is genuine: "${targetInput}". IMPORTANT: Write the entire response report strictly in language code: "${currentLang}" (id for Indonesian, en for English, es for Spanish, zh for Chinese). Provide a risk score level and a concise summary.`;
 
                 const aiResponse = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
                 const response = await fetch(aiResponse, {
@@ -101,12 +157,19 @@
                 });
 
                 const aiData = await response.json();
-                const analysisResult = aiData.candidates?.[0]?.content?.parts?.[0]?.text || 'Failed to generate analysis.';
+                
+                // Cek apakah Gemini merespons dengan benar
+                if (!aiData.candidates || !aiData.candidates[0].content) {
+                    throw new Error('Gagal mendapakan respons dari AI.');
+                }
+
+                const analysisResult = aiData.candidates[0].content.parts[0].text;
 
                 resultText.innerText = analysisResult;
                 resultContainer.classList.remove('hidden');
 
-                await fetch(supabaseUrl, {
+                // Kirim data ke Supabase (tidak wajib menghentikan tampilan jika tabel berbeda, tapi tetap diproses)
+                fetch(supabaseUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -115,17 +178,18 @@
                     },
                     body: JSON.stringify({
                         target: targetInput,
-                        risk_score: 'AI Analyzed (Global)',
+                        risk_score: 'AI Analyzed (' + currentLang.toUpperCase() + ')',
                         analysis_summary: analysisResult,
                         status: 'Verified'
                     })
-                });
+                }).catch(err => console.log('Supabase log:', err));
 
             } catch (error) {
                 console.error(error);
-                alert('Connection error occurred during analysis.');
+                resultText.innerText = currentLang === 'id' ? 'Gagal menghasilkan analisis. Periksa kembali API Key Anda.' : 'Failed to generate analysis. Please check your API Key.';
+                resultContainer.classList.remove('hidden');
             } finally {
-                btn.innerText = 'Analyze Now';
+                btn.innerText = t.btnText;
                 btn.disabled = false;
             }
         }
