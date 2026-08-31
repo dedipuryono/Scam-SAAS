@@ -3,7 +3,7 @@ export async function onRequestPost(context) {
     const { target, lang } = await context.request.json();
     
     // Kunci API Gemini Anda yang baru dan valid
-    const geminiApiKey = 'Ab8RN6ID33Wk9Kljrk70UeDIi9UzbcweuG-Z4-pPoNsmoX3frw';
+    const geminiApiKey = 'AQ.Ab8RN6LM-39cBevmRuS2yPoa9N6q5Way6iX9WzyTxgK_1r5kgA';
 
     const promptText = `Analyze the following social media account, store, or influencer objectively to check if it has scam indicators or is genuine: "${target}". IMPORTANT: Write the entire response report strictly in language code: "${lang}" (id for Indonesian, en for English, es for Spanish, zh for Chinese). Provide a risk score level and a concise summary.`;
 
