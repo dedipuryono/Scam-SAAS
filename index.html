@@ -142,7 +142,6 @@
             const supabaseKey = 'sb_publishable_C14TG-LjEYMnGzUT400FJw_HRswxjh7';
 
             try {
-                // Memanggil Backend Function Cloudflare kita (/api/analyze)
                 const response = await fetch('/api/analyze', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -154,8 +153,12 @@
 
                 const aiData = await response.json();
                 
+                if (!response.ok) {
+                    throw new Error(aiData.error || 'Terjadi kesalahan pada server.');
+                }
+
                 if (!aiData.candidates || !aiData.candidates[0].content) {
-                    throw new Error('Gagal mendapatkan respons dari server AI.');
+                    throw new Error('Format respons AI tidak valid.');
                 }
 
                 const analysisResult = aiData.candidates[0].content.parts[0].text;
@@ -180,8 +183,8 @@
                 }).catch(err => console.log('Supabase log:', err));
 
             } catch (error) {
-                console.error(error);
-                resultText.innerText = currentLang === 'id' ? 'Gagal menghasilkan analisis. Coba beberapa saat lagi.' : 'Failed to generate analysis.';
+                console.error('Analysis error:', error);
+                resultText.innerText = (currentLang === 'id' ? 'Gagal: ' : 'Error: ') + error.message;
                 resultContainer.classList.remove('hidden');
             } finally {
                 btn.innerText = t.btnText;
