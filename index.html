@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShieldCheck - Database Terbuka Investigasi Digital</title>
+    <title>ShieldCheck - Global Digital Investigation & Trust Database</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between">
@@ -19,18 +19,18 @@
             <span class="text-xl font-bold tracking-wide">ShieldCheck</span>
         </div>
         <div class="space-x-4 text-sm text-slate-400">
-            <a href="#tentang" class="hover:text-white transition">Tentang</a>
-            <a href="#laporkan" class="hover:text-white transition">Laporkan</a>
+            <a href="#tentang" class="hover:text-white transition">About</a>
+            <a href="#laporkan" class="hover:text-white transition">Report</a>
         </div>
     </header>
 
     <!-- Main Content -->
     <main class="flex-grow flex flex-col items-center justify-center px-4 text-center my-12">
         <h1 class="text-3xl md:text-5xl font-extrabold max-w-3xl leading-tight mb-4">
-            Cek Akun, Toko, atau Influencer Ini Penipu atau Asli?
+            Verify Account, Store, or Influencer: Scam or Genuine?
         </h1>
         <p class="text-slate-400 max-w-xl mb-8 text-sm md:text-base">
-            Masukkan link profil atau username media sosial untuk mendapatkan laporan audit keamanan instan berbasis AI.
+            Enter a social media profile link or username to get an instant AI-powered security audit report in your preferred language.
         </p>
 
         <!-- Form Input -->
@@ -38,7 +38,7 @@
             <input 
                 type="text" 
                 id="targetInput" 
-                placeholder="Contoh: @sneakers_murah_jkt atau link profil..." 
+                placeholder="Example: @username or profile link..." 
                 class="flex-grow bg-transparent px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none text-sm md:text-base"
             >
             <button 
@@ -46,24 +46,24 @@
                 id="submitBtn"
                 class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-6 py-3 rounded-xl transition text-sm md:text-base shadow-lg shadow-indigo-600/30"
             >
-                Analisis Sekarang
+                Analyze Now
             </button>
         </div>
 
         <!-- Hasil Analisis -->
         <div id="resultContainer" class="w-full max-w-2xl mt-8 hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl text-left">
-            <h3 class="text-lg font-bold text-indigo-400 mb-2">Hasil Audit Keamanan:</h3>
+            <h3 class="text-lg font-bold text-indigo-400 mb-2">Security Audit Result:</h3>
             <div id="resultText" class="text-slate-300 text-sm whitespace-pre-line leading-relaxed"></div>
         </div>
     </main>
 
     <!-- Footer -->
     <footer class="w-full py-6 text-center text-xs text-slate-500 border-t border-slate-900">
-        <p class="mb-1">[ SPACE IKLAN / ADSENSE ]</p>
-        <p>&copy; 2026 ShieldCheck. Database Terbuka Investigasi Digital.</p>
+        <p class="mb-1">[ ADVERTISING SPACE ]</p>
+        <p>&copy; 2026 ShieldCheck. Global Digital Investigation Database.</p>
     </footer>
 
-    <!-- Script Integrasi AI & Supabase -->
+    <!-- Script Integrasi AI & Supabase dengan Auto-Language Detection -->
     <script>
         async function handleAnalysis() {
             const targetInput = document.getElementById('targetInput').value.trim();
@@ -72,41 +72,40 @@
             const resultText = document.getElementById('resultText');
 
             if (!targetInput) {
-                alert('Silakan masukkan username atau link terlebih dahulu!');
+                alert('Please enter a username or link first!');
                 return;
             }
 
-            // Ubah tombol jadi loading
-            btn.innerText = 'Menganalisis...';
+            btn.innerText = 'Analyzing...';
             btn.disabled = true;
             resultContainer.classList.add('hidden');
 
-            // Kunci dan URL yang Anda berikan
             const geminiApiKey = 'AQ.Ab8RN6I1O5wKZNSEx1en4vWD5mdX7_bpKzvbKetGIDyRMLbzFA';
             const supabaseUrl = 'https://wwofcqkjgullkphpaexz.supabase.co/rest/v1/scam_reports';
             const supabaseKey = 'sb_publishable_C14TG-LjEYMnGzUT400FJw_HRswxjh7';
 
             try {
-                // 1. Panggil Gemini API untuk analisis
+                // Deteksi bahasa otomatis berdasarkan input atau instruksi global
+                const promptText = `Analyze the following social media account, store, or influencer objectively to check if it has scam indicators or is genuine: "${targetInput}". 
+                IMPORTANT: Detect the language of the target/query or user context, and write the entire response report in that exact same language (e.g., if input is in Indonesian, respond in Indonesian; if in English, respond in English; if in Spanish, respond in Spanish, etc.). Provide a risk score level and a concise summary.`;
+
                 const aiResponse = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
                 const response = await fetch(aiResponse, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{
-                            parts: [{ text: `Analisis akun, toko, atau influencer media sosial berikut secara objektif apakah berpotensi penipuan (scam) atau aman: "${targetInput}". Berikan tingkat risiko (Rendah / Sedang / Tinggi) beserta alasan singkat dalam Bahasa Indonesia.` }]
+                            parts: [{ text: promptText }]
                         }]
                     })
                 });
 
                 const aiData = await response.json();
-                const analysisResult = aiData.candidates?.[0]?.content?.parts?.[0]?.text || 'Gagal menghasilkan analisis.';
+                const analysisResult = aiData.candidates?.[0]?.content?.parts?.[0]?.text || 'Failed to generate analysis.';
 
-                // Tampilkan hasil ke layar
                 resultText.innerText = analysisResult;
                 resultContainer.classList.remove('hidden');
 
-                // 2. Simpan laporan ke database Supabase
                 await fetch(supabaseUrl, {
                     method: 'POST',
                     headers: {
@@ -116,7 +115,7 @@
                     },
                     body: JSON.stringify({
                         target: targetInput,
-                        risk_score: 'Teranalisis AI',
+                        risk_score: 'AI Analyzed (Global)',
                         analysis_summary: analysisResult,
                         status: 'Verified'
                     })
@@ -124,9 +123,9 @@
 
             } catch (error) {
                 console.error(error);
-                alert('Terjadi kesalahan koneksi saat melakukan analisis.');
+                alert('Connection error occurred during analysis.');
             } finally {
-                btn.innerText = 'Analisis Sekarang';
+                btn.innerText = 'Analyze Now';
                 btn.disabled = false;
             }
         }
