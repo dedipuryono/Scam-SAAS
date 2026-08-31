@@ -145,10 +145,15 @@
             try {
                 const promptText = `Analyze the following social media account, store, or influencer objectively to check if it has scam indicators or is genuine: "${targetInput}". IMPORTANT: Write the entire response report strictly in language code: "${currentLang}" (id for Indonesian, en for English, es for Spanish, zh for Chinese). Provide a risk score level and a concise summary.`;
 
-                const aiResponse = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
-                const response = await fetch(aiResponse, {
+                // URL Endpoint murni tanpa parameter ?key= di belakang
+                const aiResponseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+                
+                const response = await fetch(aiResponseUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-goog-api-key': geminiApiKey // Kunci AQ. dikirim aman lewat header ini
+                    },
                     body: JSON.stringify({
                         contents: [{
                             parts: [{ text: promptText }]
@@ -158,9 +163,8 @@
 
                 const aiData = await response.json();
                 
-                // Cek apakah Gemini merespons dengan benar
                 if (!aiData.candidates || !aiData.candidates[0].content) {
-                    throw new Error('Gagal mendapakan respons dari AI.');
+                    throw new Error('Gagal mendapatkan respons dari AI.');
                 }
 
                 const analysisResult = aiData.candidates[0].content.parts[0].text;
@@ -168,7 +172,7 @@
                 resultText.innerText = analysisResult;
                 resultContainer.classList.remove('hidden');
 
-                // Kirim data ke Supabase (tidak wajib menghentikan tampilan jika tabel berbeda, tapi tetap diproses)
+                // Kirim data ke database Supabase
                 fetch(supabaseUrl, {
                     method: 'POST',
                     headers: {
@@ -186,7 +190,7 @@
 
             } catch (error) {
                 console.error(error);
-                resultText.innerText = currentLang === 'id' ? 'Gagal menghasilkan analisis. Periksa kembali API Key Anda.' : 'Failed to generate analysis. Please check your API Key.';
+                resultText.innerText = currentLang === 'id' ? 'Gagal menghasilkan analisis. Periksa kembali koneksi atau API Key Anda.' : 'Failed to generate analysis.';
                 resultContainer.classList.remove('hidden');
             } finally {
                 btn.innerText = t.btnText;
