@@ -2,13 +2,13 @@ export async function onRequestPost(context) {
   try {
     const { target, lang } = await context.request.json();
     
-    // Kunci API Gemini Anda
-    const geminiApiKey = 'AQ.Ab8RN6I1O5wKZNSEx1en4vWD5mdX7_bpKzvbKetGIDyRMLbzFA';
+    // Kunci API Gemini Anda (Format Auth Key baru 'AQ.')
+    const geminiApiKey = 'AQ.Ab8RN6ID33Wk9Klirk70UEdLi9UzbcweuG-Z4-pPo';
 
     const promptText = `Analyze the following social media account, store, or influencer objectively to check if it has scam indicators or is genuine: "${target}". IMPORTANT: Write the entire response report strictly in language code: "${lang}" (id for Indonesian, en for English, es for Spanish, zh for Chinese). Provide a risk score level and a concise summary.`;
 
-    // Menggunakan parameter key di URL agar universal
-    const apiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
+    // Menggunakan model Gemini aktif terbaru
+    const apiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
