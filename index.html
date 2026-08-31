@@ -19,7 +19,7 @@
             <span class="text-xl font-bold tracking-wide">ShieldCheck</span>
         </div>
 
-        <!-- Tombol Pilihan Bahasa & Menu -->
+        <!-- Tombol Pilihan Bahasa -->
         <div class="flex items-center space-x-4">
             <select id="langSelect" class="bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 cursor-pointer">
                 <option value="id">🇮🇩 Bahasa Indonesia</option>
@@ -73,7 +73,7 @@
         <p>&copy; 2026 ShieldCheck. Global Digital Investigation Database.</p>
     </footer>
 
-    <!-- Script Integrasi & Pengubah Bahasa -->
+    <!-- Script Utama -->
     <script>
         const translations = {
             id: {
@@ -138,33 +138,24 @@
             btn.disabled = true;
             resultContainer.classList.add('hidden');
 
-            const geminiApiKey = 'AQ.Ab8RN6LgwjRA4GZhSZCdDa4ke4xM84IP7nU1ng5rzsL35B4i3Q';
             const supabaseUrl = 'https://wwofcqkjgullkphpaexz.supabase.co/rest/v1/scam_reports';
             const supabaseKey = 'sb_publishable_C14TG-LjEYMnGzUT400FJw_HRswxjh7';
 
             try {
-                const promptText = `Analyze the following social media account, store, or influencer objectively to check if it has scam indicators or is genuine: "${targetInput}". IMPORTANT: Write the entire response report strictly in language code: "${currentLang}" (id for Indonesian, en for English, es for Spanish, zh for Chinese). Provide a risk score level and a concise summary.`;
-
-                // URL Endpoint murni tanpa parameter ?key= di belakang
-                const aiResponseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
-                
-                const response = await fetch(aiResponseUrl, {
+                // Memanggil Backend Function Cloudflare kita (/api/analyze)
+                const response = await fetch('/api/analyze', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-goog-api-key': geminiApiKey // Kunci AQ. dikirim aman lewat header ini
-                    },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{ text: promptText }]
-                        }]
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        target: targetInput, 
+                        lang: currentLang 
                     })
                 });
 
                 const aiData = await response.json();
                 
                 if (!aiData.candidates || !aiData.candidates[0].content) {
-                    throw new Error('Gagal mendapatkan respons dari AI.');
+                    throw new Error('Gagal mendapatkan respons dari server AI.');
                 }
 
                 const analysisResult = aiData.candidates[0].content.parts[0].text;
@@ -172,7 +163,7 @@
                 resultText.innerText = analysisResult;
                 resultContainer.classList.remove('hidden');
 
-                // Kirim data ke database Supabase
+                // Simpan ke Supabase
                 fetch(supabaseUrl, {
                     method: 'POST',
                     headers: {
@@ -190,7 +181,7 @@
 
             } catch (error) {
                 console.error(error);
-                resultText.innerText = currentLang === 'id' ? 'Gagal menghasilkan analisis. Periksa kembali koneksi atau API Key Anda.' : 'Failed to generate analysis.';
+                resultText.innerText = currentLang === 'id' ? 'Gagal menghasilkan analisis. Coba beberapa saat lagi.' : 'Failed to generate analysis.';
                 resultContainer.classList.remove('hidden');
             } finally {
                 btn.innerText = t.btnText;
