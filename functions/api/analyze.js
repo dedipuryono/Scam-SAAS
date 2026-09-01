@@ -1,45 +1,121 @@
 export async function onRequestPost(context) {
   try {
-    const { target, lang } = await context.request.json();
-    
-    // Kunci API baru berformat AQ. milik Anda
-    const geminiApiKey = 'AQ.Ab8RN6LM-39cBevmRuS2yPoa9N6q5Way6iX9WzyTxgK_1r5kgA';
+    const { target, lang = "id" } = await context.request.json();
 
-    const promptText = `Analyze the following social media account, store, or influencer objectively to check if it has scam indicators or is genuine: "${target}". IMPORTANT: Write the entire response report strictly in language code: "${lang}" (id for Indonesian, en for English, es for Spanish, zh for Chinese). Provide a risk score level and a concise summary.`;
+    if (!target || target.trim() === "") {
+      return new Response(
+        JSON.stringify({
+          error: "Target tidak boleh kosong"
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
+    }
 
-    const apiResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': geminiApiKey
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{ text: promptText }]
-        }]
-      })
-    });
+    // Ambil API Key dari Cloudflare Environment Variable
+    const geminiApiKey = context.env.GEMINI_API_KEY;
+
+    if (!geminiApiKey) {
+      return new Response(
+        JSON.stringify({
+          error: "GEMINI_API_KEY belum dikonfigurasi di Cloudflare"
+        }),
+        {
+          status: 500,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
+    }
+
+    const promptText = `
+Analyze the following social media account, online store, influencer, or digital profile:
+
+"${target}"
+
+Instructions:
+- Write the entire response in language: ${lang}
+- Give a risk level:
+  LOW RISK
+  MEDIUM RISK
+  HIGH RISK
+- Explain the reasons.
+- Provide a short summary.
+- Be objective.
+- If there is insufficient public information, clearly state that the analysis is limited.
+`;
+
+    const apiResponse = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": geminiApiKey
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: promptText
+                }
+              ]
+            }
+          ]
+        })
+      }
+    );
 
     const data = await apiResponse.json();
 
+    console.log("Gemini Status:", apiResponse.status);
+    console.log("Gemini Response:", JSON.stringify(data));
+
     if (!apiResponse.ok) {
-      return new Response(JSON.stringify({ 
-        error: data.error?.message || 'Gemini API Error', 
-        details: data 
-      }), {
-        status: apiResponse.status,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return new Response(
+        JSON.stringify({
+          error:
+            data?.error?.message ||
+            "Gemini API Error",
+          details: data
+        }),
+        {
+          status: apiResponse.status,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
     }
 
-    return new Response(JSON.stringify(data), {
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return new Response(
+      JSON.stringify(data),
+      {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    );
 
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    console.error("Server Error:", error);
+
+    return new Response(
+      JSON.stringify({
+        error: error.message
+      }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    );
   }
 }
