@@ -5,29 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ShieldCheck - Global Digital Investigation Database</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tambahkan Marked.js untuk merender Markdown secara profesional -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
 
     <!-- Header -->
-    <header class="w-full py-4 px-6 md:px-12 flex justify-between items-center border-b border-slate-800">
-        <div class="flex items-center space-x-2">
-            <div class="bg-blue-600 p-2 rounded-lg">
+    <header class="w-full py-5 px-6 md:px-12 flex justify-between items-center border-b border-slate-800/80 backdrop-blur-md sticky top-0 z-50 bg-slate-950/80">
+        <div class="flex items-center space-x-3">
+            <div class="bg-gradient-to-tr from-blue-600 to-indigo-600 p-2.5 rounded-xl shadow-lg shadow-indigo-500/20">
                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                 </svg>
             </div>
-            <span class="text-xl font-bold tracking-wide">ShieldCheck</span>
+            <span class="text-xl font-bold tracking-wide bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">ShieldCheck</span>
         </div>
 
         <!-- Tombol Pilihan Bahasa -->
         <div class="flex items-center space-x-4">
-            <select id="langSelect" class="bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 cursor-pointer">
+            <select id="langSelect" class="bg-slate-900 border border-slate-700/80 text-slate-200 text-sm rounded-xl px-3.5 py-2 focus:outline-none focus:border-indigo-500 cursor-pointer transition shadow-inner">
                 <option value="id">🇮🇩 Bahasa Indonesia</option>
                 <option value="en">🇬🇧 English</option>
                 <option value="es">🇪🇸 Español</option>
                 <option value="zh">🇨🇳 中文</option>
             </select>
-            <div class="hidden md:flex space-x-4 text-sm text-slate-400">
+            <div class="hidden md:flex space-x-6 text-sm text-slate-400 font-medium">
                 <a href="#tentang" class="hover:text-white transition">About</a>
                 <a href="#laporkan" class="hover:text-white transition">Report</a>
             </div>
@@ -35,41 +37,62 @@
     </header>
 
     <!-- Main Content -->
-    <main class="flex-grow flex flex-col items-center justify-center px-4 text-center my-12">
-        <h1 id="mainTitle" class="text-3xl md:text-5xl font-extrabold max-w-3xl leading-tight mb-4">
+    <main class="flex-grow flex flex-col items-center justify-center px-4 text-center my-16">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold mb-6 tracking-wide uppercase">
+            <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span> AI-Powered Fraud Intelligence
+        </div>
+        
+        <h1 id="mainTitle" class="text-3xl md:text-5xl font-extrabold max-w-3xl leading-tight mb-4 tracking-tight">
             Cek Akun, Toko, atau Influencer Ini Penipu atau Asli?
         </h1>
-        <p id="mainDesc" class="text-slate-400 max-w-xl mb-8 text-sm md:text-base">
+        <p id="mainDesc" class="text-slate-400 max-w-xl mb-10 text-sm md:text-base leading-relaxed">
             Masukkan link profil atau username media sosial untuk mendapatkan laporan audit keamanan instan berbasis AI.
         </p>
 
         <!-- Form Input -->
-        <div class="w-full max-w-2xl bg-slate-900 border border-slate-800 p-2 rounded-2xl flex flex-col md:flex-row gap-2 shadow-2xl">
-            <input 
-                type="text" 
-                id="targetInput" 
-                placeholder="Contoh: @sneakers_murah_jkt atau link profil..." 
-                class="flex-grow bg-transparent px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none text-sm md:text-base"
-            >
+        <div class="w-full max-w-2xl bg-slate-900/90 border border-slate-800 p-2.5 rounded-2xl flex flex-col md:flex-row gap-2.5 shadow-2xl shadow-black/50 backdrop-blur-xl">
+            <div class="flex items-center flex-grow px-3">
+                <svg class="w-5 h-5 text-slate-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input 
+                    type="text" 
+                    id="targetInput" 
+                    placeholder="Contoh: @sneakers_murah_jkt atau link profil..." 
+                    class="w-full bg-transparent text-slate-100 placeholder-slate-500 focus:outline-none text-sm md:text-base"
+                >
+            </div>
             <button 
                 onclick="handleAnalysis()" 
                 id="submitBtn"
-                class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-6 py-3 rounded-xl transition text-sm md:text-base shadow-lg shadow-indigo-600/30"
+                class="bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] text-white font-medium px-7 py-3.5 rounded-xl transition-all text-sm md:text-base shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2"
             >
-                Analisis Sekarang
+                <span>Analisis Sekarang</span>
             </button>
         </div>
 
-        <!-- Hasil Analisis -->
-        <div id="resultContainer" class="w-full max-w-2xl mt-8 hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl text-left">
-            <h3 class="text-lg font-bold text-indigo-400 mb-2">Hasil Audit Keamanan:</h3>
-            <div id="resultText" class="text-slate-300 text-sm whitespace-pre-line leading-relaxed"></div>
+        <!-- Hasil Analisis dengan Tampilan Profesional (Card & Styled Typography) -->
+        <div id="resultContainer" class="w-full max-w-3xl mt-10 hidden bg-slate-900/80 border border-slate-800/80 p-6 md:p-8 rounded-3xl text-left shadow-2xl backdrop-blur-xl transition-all">
+            <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-800">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-indigo-500/10 p-2 rounded-lg border border-indigo-500/20">
+                        <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <h3 id="resultHeaderTitle" class="text-base font-bold text-slate-200 uppercase tracking-wider">Hasil Audit Keamanan</h3>
+                </div>
+                <span class="text-xs px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Verified Analysis</span>
+            </div>
+            
+            <!-- Tempat Render Markdown Profesional -->
+            <div id="resultText" class="text-slate-300 text-sm md:text-base leading-relaxed space-y-4"></div>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="w-full py-6 text-center text-xs text-slate-500 border-t border-slate-900">
-        <p class="mb-1">[ ADVERTISING SPACE ]</p>
+    <footer class="w-full py-6 text-center text-xs text-slate-500 border-t border-slate-900 bg-slate-950/50">
+        <p class="mb-1 text-slate-600 tracking-widest">[ ADVERTISING SPACE ]</p>
         <p>&copy; 2026 ShieldCheck. Global Digital Investigation Database.</p>
     </footer>
 
@@ -82,7 +105,7 @@
                 placeholder: "Contoh: @sneakers_murah_jkt atau link profil...",
                 btnText: "Analisis Sekarang",
                 loadingText: "Menganalisis...",
-                resultTitle: "Hasil Audit Keamanan:"
+                resultTitle: "Hasil Audit Keamanan"
             },
             en: {
                 title: "Verify Account, Store, or Influencer: Scam or Genuine?",
@@ -90,7 +113,7 @@
                 placeholder: "Example: @username or profile link...",
                 btnText: "Analyze Now",
                 loadingText: "Analyzing...",
-                resultTitle: "Security Audit Result:"
+                resultTitle: "Security Audit Report"
             },
             es: {
                 title: "¿Verificar Cuenta, Tienda o Influencer: Estafa o Real?",
@@ -98,7 +121,7 @@
                 placeholder: "Ejemplo: @usuario o enlace de perfil...",
                 btnText: "Analizar Ahora",
                 loadingText: "Analizando...",
-                resultTitle: "Resultado de Auditoría de Seguridad:"
+                resultTitle: "Resultado de Auditoría"
             },
             zh: {
                 title: "核实账号、商店或网红：是骗局还是正品？",
@@ -106,7 +129,7 @@
                 placeholder: "例如：@用户名 或主页链接...",
                 btnText: "立即分析",
                 loadingText: "分析中...",
-                resultTitle: "安全审计结果："
+                resultTitle: "安全审计结果"
             }
         };
 
@@ -117,13 +140,14 @@
             document.getElementById('mainTitle').innerText = t.title;
             document.getElementById('mainDesc').innerText = t.desc;
             document.getElementById('targetInput').placeholder = t.placeholder;
-            document.getElementById('submitBtn').innerText = t.btnText;
-            document.querySelector('#resultContainer h3').innerText = t.resultTitle;
+            document.getElementById('submitBtn').querySelector('span').innerText = t.btnText;
+            document.getElementById('resultHeaderTitle').innerText = t.resultTitle;
         });
 
         async function handleAnalysis() {
             const targetInput = document.getElementById('targetInput').value.trim();
             const btn = document.getElementById('submitBtn');
+            const btnSpan = btn.querySelector('span');
             const resultContainer = document.getElementById('resultContainer');
             const resultText = document.getElementById('resultText');
             const currentLang = document.getElementById('langSelect').value;
@@ -134,7 +158,7 @@
                 return;
             }
 
-            btn.innerText = t.loadingText;
+            btnSpan.innerText = t.loadingText;
             btn.disabled = true;
             resultContainer.classList.add('hidden');
 
@@ -163,8 +187,14 @@
 
                 const analysisResult = aiData.candidates[0].content.parts[0].text;
 
-                resultText.innerText = analysisResult;
+                // Render Markdown secara otomatis menjadi HTML yang rapi, elegan, dan profesional menggunakan Marked.js
+                resultText.innerHTML = marked.parse(analysisResult);
+                
+                // Styling tambahan otomatis untuk elemen yang dirender Marked agar tampak mewah
+                formatRenderedMarkdown();
+
                 resultContainer.classList.remove('hidden');
+                resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
                 // Simpan ke Supabase
                 fetch(supabaseUrl, {
@@ -184,12 +214,42 @@
 
             } catch (error) {
                 console.error('Analysis error:', error);
-                resultText.innerText = (currentLang === 'id' ? 'Gagal: ' : 'Error: ') + error.message;
+                resultText.innerHTML = `<p class="text-rose-400 bg-rose-500/10 border border-rose-500/20 p-4 rounded-xl"><strong>Gagal:</strong> ${error.message}</p>`;
                 resultContainer.classList.remove('hidden');
             } finally {
-                btn.innerText = t.btnText;
+                btnSpan.innerText = t.btnText;
                 btn.disabled = false;
             }
+        }
+
+        // Fungsi helper untuk mempercantik elemen HTML hasil render Markdown
+        function formatRenderedMarkdown() {
+            const container = document.getElementById('resultText');
+            
+            // Styling Heading (h3, h2, dll)
+            container.querySelectorAll('h3, h2, h1').forEach(el => {
+                el.className = "text-indigo-400 font-bold text-base md:text-lg mt-6 mb-3 tracking-wide flex items-center gap-2 border-l-4 border-indigo-500 pl-3 py-0.5";
+            });
+
+            // Styling Paragraf
+            container.querySelectorAll('p').forEach(el => {
+                el.className = "text-slate-300 leading-relaxed mb-3";
+            });
+
+            // Styling List (ul / ol)
+            container.querySelectorAll('ul, ol').forEach(el => {
+                el.className = "space-y-2 my-3 pl-4 border-l border-slate-800";
+            });
+
+            // Styling List Item
+            container.querySelectorAll('li').forEach(el => {
+                el.className = "text-slate-300 text-sm md:text-base leading-normal";
+            });
+
+            // Styling Strong / Bold text
+            container.querySelectorAll('strong').forEach(el => {
+                el.className = "text-white font-semibold";
+            });
         }
     </script>
 </body>
