@@ -2,6 +2,7 @@ export async function onRequestPost(context) {
   try {
     const { target, lang = "id" } = await context.request.json();
 
+    // Validasi input
     if (!target || target.trim() === "") {
       return new Response(
         JSON.stringify({
@@ -33,6 +34,7 @@ export async function onRequestPost(context) {
       );
     }
 
+    // Prompt AI
     const promptText = `
 Analyze the following social media account, online store, influencer, or digital profile:
 
@@ -50,13 +52,13 @@ Instructions:
 - If there is insufficient public information, clearly state that the analysis is limited.
 `;
 
+    // Request ke Gemini
     const apiResponse = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${geminiApiKey}`,
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": geminiApiKey
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           contents: [
@@ -74,8 +76,11 @@ Instructions:
 
     const data = await apiResponse.json();
 
+    // Logging untuk Cloudflare
+    console.log("=================================");
     console.log("Gemini Status:", apiResponse.status);
     console.log("Gemini Response:", JSON.stringify(data));
+    console.log("=================================");
 
     if (!apiResponse.ok) {
       return new Response(
@@ -97,6 +102,7 @@ Instructions:
     return new Response(
       JSON.stringify(data),
       {
+        status: 200,
         headers: {
           "Content-Type": "application/json"
         }
@@ -108,7 +114,7 @@ Instructions:
 
     return new Response(
       JSON.stringify({
-        error: error.message
+        error: error.message || "Internal Server Error"
       }),
       {
         status: 500,
